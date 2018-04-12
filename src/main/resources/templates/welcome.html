@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>Welcome</title>
+<link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<div>
+			<table class="blueTable" align="center">
+				<tr>
+					<td class="fields"><label>Amount </label></td>
+					<td class="fields"><input class="form-control"
+						type="text" size="40" id="amount" value="1.24"></td>
+				</tr>
+				<tr>
+					<td class="fields"><label>TID </label></td>
+					<td class="fields"><input class="form-control"
+						type="text" id="TID" value="99998888"></td>
+				</tr>
+				<tr>
+					<td class="fields"><label>MID </label></td>
+					<td class="fields"><input class="form-control"
+						type="text" id="MID" value="12345678912"></td>
+				</tr>
+				<tr>
+					<td class="fields"><label>API Key </label></td>
+					<td class="fields"><input class="form-control"
+						type="text" id="apikey" value="b027dacd-1c13-4916-8b93-38fae6be2f80"></td>
+				</tr>
+				<tr>
+					<td class="fields"><label>API Secret </label></td>
+					<td class="fields"><input class="form-control"
+						type="text" id="apiSecret" value="21296dd3-5bf6-4dfc-b8a2-03fbcc213b7b"></td>
+				</tr>
+			</table>
+		</div>
+		<div class="spacing"> <button class="button">Get QR Order</button></div>
+		<div class="spacing" id="div2"></div>
+		<div class="spacing" id="div1"></div>
+		<div class="spacing" id="div3"></div>
+		
+		<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+		<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="js/custom.js"></script>
+		<script>
+			$(document).ready(function() {
+				$("button").click(function() {
+					var continueFlag = true;
+					var qrCode = '';
+					var amount =  $("#amount").val();
+					var tid = $("#TID").val();
+					var mid = $("#MID").val();
+					var apikey = $("#apikey").val();
+					var apiSecret = $("#apiSecret").val();
+
+					$.ajax({
+						type : "POST",
+						url : "/demo/order/request",
+						async: false,
+						data: { Amount: amount, InstitutionCode: '20000000001', Mid: mid,Tid: tid,apikey: apikey,apiSecret:apiSecret,ConditionCode:'85',TransactionCurrency:'SGD',Stan:'100000', ResponseNotificationUrl:'https%3A%2F%2Fyour-domain-name%3A8801%2Fdemo%2Forder%2Fnotification'},
+						success : function(result) {
+							 qrCode = result.txn_identifier;
+							 $('#div1').html('<img src="data:image/png;base64,' + result.qr_code + '" />');
+							 $('#div2').html('<img src="images/loader.gif" />');
+							 var encodedParameter = encodeURIComponent(result.txn_identifier);
+							 $('#div3').html('<a href="netspay://netspay.com/?qrdata='+ encodedParameter+'&amp;source=com.nets.netspay&amp;urlscheme=netspay"> <img src="images/netspay.png" /></a>');
+							 setTimeout(function() {query_function();}, 10000);
+
+						},
+						error : function(result) {
+							alert('error');
+						}
+					});
+					var inquiryCount=1;
+					query_function = (function() {
+						$.ajax({
+							type : "POST",
+							async: false,
+							url : "/demo/transaction/query",
+							data: { Amount: amount, InstitutionCode: '20000000001', Mid: mid,Tid: tid,apikey: apikey,apiSecret:apiSecret,ConditionCode:'85',TransactionCurrency:'SGD',Stan:'100000', qrCode:qrCode},
+							success : function(result) {
+ 								if(result.response_code=='09' && inquiryCount < 3){
+ 									setTimeout(function() {query_function();}, 15000);
+ 									inquiryCount++;
+ 								}else{
+ 									if(result.response_code=='00'){
+ 										$('#div2').html('<img src="images/success.png" />');
+ 									}else{
+ 										$('#div2').html('<img src="images/failed.png" />');
+ 									}
+ 								}
+							},
+							error : function(result) {
+								alert('error');
+							}
+						});
+					});
+				});
+			});
+			
+		</script>
+	</div>
+</body>
+</html>

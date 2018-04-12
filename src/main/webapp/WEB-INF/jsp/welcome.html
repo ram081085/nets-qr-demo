@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>Welcome</title>
+<link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<div class="spacing"> <button class="button">Get QR Order</button></div>
+		<div class="spacing" id="div2"></div>
+		<div class="spacing" id="div1"></div>
+		
+		<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+		<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="js/custom.js"></script>
+		<script>
+			$(document).ready(function() {
+				$("button").click(function() {
+					var continueFlag = true;
+					var qrCode = '';
+					$.ajax({
+						type : "POST",
+						url : "/demo/order/request",
+						async: false,
+						data:'Amount=1.23&InstitutionCode=20000000001&Mid=12345678912&Tid=99998888&ConditionCode=85&TransactionCurrency=SGD&Stan=100000&ResponseNotificationUrl=https%3A%2F%2Fyour-domain-name%3A8801%2Fdemo%2Forder%2Fnotification',
+						success : function(result) {
+							 qrCode = result.txn_identifier;
+							 $('#div1').html('<img src="data:image/png;base64,' + result.qr_code + '" />');
+							 $('#div2').html('<img src="images/loader.gif" />');
+							 setTimeout(function() {query_function();}, 10000);
+
+						},
+						error : function(result) {
+							alert('error');
+						}
+					});
+					var inquiryCount=1;
+					query_function = (function() {
+						$.ajax({
+							type : "POST",
+							async: false,
+							url : "/demo/transaction/query",
+							data:'Amount=1.23&InstitutionCode=20000000001&Mid=12345678912&Tid=99998888&ConditionCode=85&TransactionCurrency=SGD&Stan=100000&qrCode='+qrCode,
+							success : function(result) {
+ 								if(result.response_code=='09' && inquiryCount < 3){
+ 									setTimeout(function() {query_function();}, 15000);
+ 									inquiryCount++;
+ 								}else{
+ 									if(result.response_code=='00'){
+ 										$('#div2').html('<img src="images/success.png" />');
+ 									}else{
+ 										$('#div2').html('<img src="images/failed.png" />');
+ 									}
+ 								}
+							},
+							error : function(result) {
+								alert('error');
+							}
+						});
+					});
+				});
+			});
+			
+		</script>
+	</div>
+</body>
+</html>
