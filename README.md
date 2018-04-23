@@ -33,4 +33,4 @@ From IDE run Application class as java application.
 
 ## Code Reuse
 
-This project is created for simple demo purpose, not fine tuned for production purpose. You can use parts of the with caution.
+This project is created for simple demo purpose, not fine tuned for production use. You can use parts of the code with caution.
