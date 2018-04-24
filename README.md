@@ -10,13 +10,13 @@ You need the below softwares in order to compile and run:
 
 Java 8
 Maven 3+
-IDE
+IDE(Optional)
 
 ## Installing
 
 Project can be built thru IDE or command line using:
 
-mvn clean install -Pjenkins
+mvn clean install
 
 ## Running
 
