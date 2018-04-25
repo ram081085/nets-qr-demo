@@ -1,10 +1,10 @@
 # nets-qr-demo
 
-## Purpose
+## Purpose:
 
 This is a sample project to demonstrate the integration with nets qr payments. 
 
-## Pre-requisites
+## Pre-requisites:
 
 You need the below softwares in order to compile and run:
 
@@ -12,13 +12,13 @@ You need the below softwares in order to compile and run:
  * Maven 3+
  * IDE(Optional)
 
-## Installing
+## Installing:
 
 Project can be built thru IDE or command line using:
 
 mvn clean install
 
-## Running
+## Running:
 
 For commandline run the below command:
 
@@ -31,6 +31,6 @@ From IDE run Application class as java application.
  * Spring Boot
  * Swagger
 
-## Code Reuse
+## Code Reuse:
 
 This project is created for simple demo purpose, not fine tuned for production use. You can use parts of the code with caution.
