@@ -8,9 +8,9 @@ This is a sample project to demonstrate the integration with nets qr payments.
 
 You need the below softwares in order to compile and run:
 
-Java 8
-Maven 3+
-IDE(Optional)
+ * Java 8
+ * Maven 3+
+ * IDE(Optional)
 
 ## Installing
 
